@@ -8,18 +8,22 @@ namespace spartanDungeon
         public enum Abilitys { 공격력, 방어력 };
         private static Character player;
 
-        private static List<Item> myItem = new List<Item>();
+        private static List<Item> myItem = new();
 
         private static int[] myAddStat = new int[2];
         private static int[] myEquipment = new int[3];
 
+        public static int sort = 0;
+        public static bool order = true;
 
+        /// <summary>게임 시작</summary>
         static void Main(string[] args)
         {
             GameDataSetting();
             DisplayGameIntro();
         }
 
+        /// <summary>초기 세팅</summary>
         static void GameDataSetting()
         {
             // 캐릭터 정보 세팅
@@ -49,6 +53,7 @@ namespace spartanDungeon
 
         }
 
+        /// <summary>게임 초기 화면 출력</summary>
         static void DisplayGameIntro()
         {
             Console.Clear();
@@ -71,9 +76,11 @@ namespace spartanDungeon
                 case 2:
                     DisplayInventory();
                     break;
+
             }
         }
 
+        /// <summary>케릭터 정보 화면 출력</summary>
         static void DisplayMyInfo()
         {
             AddStat();
@@ -112,6 +119,7 @@ namespace spartanDungeon
             }
         }
 
+        /// <summary>착용한 장비의 스텟 계산 메소드</summary>
         static void AddStat()
         {
             myAddStat[0] = 0;
@@ -136,6 +144,7 @@ namespace spartanDungeon
             }
         }
 
+        /// <summary>인벤토리 화면 출력</summary>
         static void DisplayInventory()
         {
             Console.Clear();
@@ -175,17 +184,21 @@ namespace spartanDungeon
 
                 if (item.Equipment) Console.ResetColor();
             }
-            Console.WriteLine("1. 장착 관리");
+            Console.WriteLine("1. 아이템 정렬");
+            Console.WriteLine("2. 장착 관리");
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("0. 나가기");
             Console.ResetColor();
             Console.WriteLine();
             Console.WriteLine("원하시는 행동을 입력해주세요.");
 
-            int input = CheckValidInput(0, 1);
+            int input = CheckValidInput(0, 2);
             switch (input)
             {
                 case 1:
+                    DisplayInventorySort();
+                    break;
+                case 2:
                     DisplayEquipment("");
                     break;
                 case 0:
@@ -194,6 +207,191 @@ namespace spartanDungeon
             }
         }
 
+        /// <summary>인벤토리 정렬 메소드</summary>
+        static void ChangeOrder(int type)
+        {
+            switch (type)
+            {
+                case 1:
+                    if (sort == type)
+                    {
+                        if (order)
+                        {
+                            myItem = myItem.OrderByDescending(item => item.ItemName).ToList();
+                            order = false;
+                        }
+                        else
+                        {
+                            myItem = myItem.OrderBy(item => item.ItemName).ToList();
+                            order = true;
+                        }
+                    }
+                    else
+                    {
+                        sort = type;
+                        myItem = myItem.OrderBy(item => item.ItemName).ToList();
+                        order = true;
+                    }
+                    break;
+                case 2:
+                    if (sort == type)
+                    {
+                        if (order)
+                        {
+                            myItem = myItem.OrderBy(item => item.Equipment).ToList();
+                            order = false;
+                        }
+                        else
+                        {
+                            myItem = myItem.OrderByDescending(item => item.Equipment).ToList();
+                            order = true;
+                        }
+                    }
+                    else
+                    {
+                        sort = type;
+                        myItem = myItem.OrderByDescending(item => item.Equipment).ToList();
+                        order = true;
+                    }
+                    break;
+                case 3:
+                    if (sort == type)
+                    {
+                        if (order)
+                        {
+                            myItem = myItem.OrderBy(item => item.Stat).ToList();
+                            order = false;
+                        }
+                        else
+                        {
+                            myItem = myItem.OrderByDescending(item => item.Stat).ToList();
+                            order = true;
+                        }
+                    }
+                    else
+                    {
+                        foreach(Item item in myItem) 
+                        {
+                            item.Stat = -1;
+                            foreach (ItemAbility itemAbility in item.ItemAbilitys)
+                            {
+                                if(itemAbility.Ability == Abilitys.공격력)
+                                {
+                                    item.Stat = itemAbility.Stat;
+                                }
+                            }
+                        }
+                        sort = type;
+                        myItem = myItem.OrderByDescending(item => item.Stat).ToList();
+                        order = true;
+                    }
+                    break;
+                case 4:
+                    if (sort == type)
+                    {
+                        if (order)
+                        {
+                            myItem = myItem.OrderBy(item => item.Stat).ToList();
+                            order = false;
+                        }
+                        else
+                        {
+                            myItem = myItem.OrderByDescending(item => item.Stat).ToList();
+                            order = true;
+                        }
+                    }
+                    else
+                    {
+                        foreach (Item item in myItem)
+                        {
+                            item.Stat = -1;
+                            foreach (ItemAbility itemAbility in item.ItemAbilitys)
+                            {
+                                if (itemAbility.Ability == Abilitys.방어력)
+                                {
+                                    item.Stat = itemAbility.Stat;
+                                }
+                            }
+                        }
+                        sort = type;
+                        myItem = myItem.OrderByDescending(item => item.Stat).ToList();
+                        order = true;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            DisplayInventorySort();
+        }
+
+        /// <summary>인벤토리 정렬 화면 출력</summary>
+        static void DisplayInventorySort()
+        {
+       
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("인벤토리 - 정렬");
+            Console.ResetColor();
+            Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
+            Console.WriteLine();
+            Console.WriteLine("[아이템 목록]");
+            foreach (Item item in myItem)
+            {
+
+                // 한글 한글자당 2자리를 차지하여 공백을 먼저 계산 해야 함
+                // 일이삼사오육칠팔구십, 일B삼D오F칠H구J, ABCDEFGHIJ 등 다양한 경우에서 모두 동일한 공백을 갖도록 계산
+                string str = item.ItemName;
+                int padLen = 0;
+                for (int i = 0; i < str.Length; i++)
+                {
+                    // 한글 한글자당 3바이트 씩 사용
+                    if (Encoding.Default.GetBytes(str.Substring(i, 1)).Length == 3)
+                        padLen++;
+                }
+
+                padLen = 20 - padLen;
+
+                if (item.Equipment) Console.ForegroundColor = ConsoleColor.Green;
+
+                Console.WriteLine($" - {(item.Equipment ? "[E]" : "   ")}| {str.PadRight(padLen)} | {item.ItemAbilitys[0].Ability} + {item.ItemAbilitys[0].Stat} | {item.Described}");
+                if (item.ItemAbilitys.Count > 1)
+                {
+                    for (int i = 1; i < item.ItemAbilitys.Count; i++)
+                    {
+                        string whiteSpace = "";
+                        Console.WriteLine($"{whiteSpace.PadRight(28, ' ')} | {item.ItemAbilitys[i].Ability} + {item.ItemAbilitys[i].Stat} |");
+                    }
+                }
+
+                if (item.Equipment) Console.ResetColor();
+            }
+            Console.WriteLine("1. 이름");
+            Console.WriteLine("2. 장착순");
+            Console.WriteLine("3. 공격력");
+            Console.WriteLine("4. 방어력");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("0. 나가기");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine("원하시는 행동을 입력해주세요.");
+
+            int input = CheckValidInput(0, 4);
+            switch (input)
+            {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    ChangeOrder(input);
+                    break;
+
+                case 0:
+                    DisplayInventory();
+                    break;
+            }
+        }
+
+        /// <summary>인벤토리 장착 화면 출력</summary>
         static void DisplayEquipment(string msg)
         {
             Console.Clear();
@@ -256,6 +454,7 @@ namespace spartanDungeon
             }
         }
 
+        /// <summary>장비 장착 변경 메소드</summary>
         static void ChangeEquipment(int index)
         {
             string msg = "";
@@ -296,6 +495,7 @@ namespace spartanDungeon
             DisplayEquipment(msg);
         }
 
+        /// <summary>입력 검증 메소드</summary>
         static int CheckValidInput(int min, int max)
         {
             while (true)
@@ -347,6 +547,7 @@ namespace spartanDungeon
             public ItemTypes Type { get; }
             public List<ItemAbility> ItemAbilitys { get; }
             public string Described { get; }
+            public int Stat { get; set; }
 
             public Item(int itemId, bool equipment, string itemName, int type, List<ItemAbility> itemAbilitys, string described)
             {
