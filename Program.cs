@@ -10,14 +10,16 @@ namespace spartanDungeon
 
         //게임 규칙 선언
         public enum ItemTypes { 무기, 방어구, 방패 };
-        private static int[] myEquipment = new int[3];
+        public static int[] myEquipment = new int[3];
         public enum Abilitys { 공격력, 방어력 };
-        private static int[] myAddStat = new int[2];
+        public static int[] myAddStat = new int[2];
+
 
         //게임 데이터 관련 변수 선언
-        private static Character player;
-        private static List<Item> myItem = new();
-        private static List<Item> shop = new();
+        public static Character player;
+        public static List<Item> myItem = new();
+        public static List<Item> shop = new();
+        public static int[] maxExp = { 1, 2, 3, 4 };
 
         //아이템 정렬관련 변수 선언
         public static int sort = 0;
@@ -849,7 +851,131 @@ namespace spartanDungeon
                     DisplayGameIntro();
                     break;
                 default:
-                    Sale(input);
+                    DisplayDungeonResult(input);
+                    break;
+            }
+        }
+
+        static void DisplayDungeonResult(int level)
+        {
+            Console.Clear();
+            Random rand = new Random();
+            bool clear = true;
+            bool die = false;
+            int minDef = 0;
+            int basicGold = 0;
+
+            switch (level)
+            {
+                case 1:
+                    minDef = 5;
+                    basicGold = 1000;
+                    break;
+                case 2:
+                    minDef = 11;
+                    basicGold = 1700;
+                    break;
+                case 3:
+                    minDef = 17;
+                    basicGold = 2500;
+                    break;
+            }
+
+            // 권장 방어력 미만인 경우 40%로 던전 실패 로직
+            if (minDef > (player.Def + myAddStat[(int)Abilitys.방어력]))
+            {       
+                // 0 : 실패, 1 : 성공
+                int ran = rand.Next(0, 101);
+                float[] probs = { 60.0f, 40.0f };
+
+                float cumulative = 0f;
+                int target = -1;
+                for (int i = 0; i < 2; i++)
+                {
+                    cumulative += probs[i];
+                    if (ran <= cumulative)
+                    {
+                        target = 1 - i;
+                        break;
+                    }
+                }
+                clear = target > 0 ? true : false; 
+            }
+
+            // 클리어 체력 감소 20~35 사이 + 내방어력 - 권장방어력
+            int subHp = rand.Next(20, 36) + player.Def + myAddStat[(int)Abilitys.방어력] - minDef;
+            // 클리어 보상 처리
+            if (clear)
+            {
+                player.Hp -= subHp;
+                float addRate = (rand.Next(player.Atk + myAddStat[(int)Abilitys.공격력], (player.Atk + myAddStat[(int)Abilitys.공격력]) * 2 + 1) / 100.0f);
+                basicGold = (int)(basicGold + basicGold * addRate);
+            }
+            else
+            {
+                // 던전 클리어 실패시 체력 감소 절반
+                player.Hp -= subHp / 2;
+            }
+
+            // 사망 체크
+            die = player.Hp > 0 ? false : true;
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("던전");
+
+            if (die)
+            {
+                Console.WriteLine(" - 사망");
+            }
+            else if (!die && !clear)
+            {
+                Console.WriteLine(" - 실패");
+            } 
+            else if (!die && clear)
+            {
+                Console.WriteLine(" - 클리어");
+            }
+            Console.ResetColor();
+            
+            if (die)
+            {
+                Console.WriteLine();
+                Console.WriteLine("캐릭터가 사망하였습니다.");
+            }
+            else if (!die && !clear)
+            {
+                Console.WriteLine();
+                Console.WriteLine("[체력 감소]");
+                Console.WriteLine($"체력 {player.Hp + subHp / 2} -> {player.Hp}");
+
+            }
+            else if (!die && clear)
+            {
+                Console.WriteLine("축하합니다!!");
+                if (level == 1) Console.Write("쉬운 던전을");
+                if (level == 2) Console.Write("일반 던전을");
+                if (level == 3) Console.Write("어려운 던전을");
+                Console.WriteLine("클리어 하였습니다.");
+                Console.WriteLine();
+
+                Console.WriteLine("[탐험 결과]");
+                Console.WriteLine($"체력 {player.Hp + subHp} -> {player.Hp}");
+                Console.WriteLine($"Gold  {player.Gold } -> {player.Gold + basicGold}");
+                player.Gold += basicGold;
+                player.Exp++;
+            }
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("0. 나가기");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine("원하시는 행동을 입력해주세요.");
+            int input = CheckValidInput(0, 0);
+            switch (input)
+            {
+                case 0:
+                    DisplayDungeon();
                     break;
             }
         }
@@ -892,8 +1018,7 @@ namespace spartanDungeon
         /// <summary>휴식 메소드</summary>
         static void Rest()
         {
-            string msg = "";
-
+            string msg;
             if (player.Gold < 500)
             {
                 msg = "Gold 가 부족합니다.";

@@ -104,22 +104,9 @@
     <Atk>10</Atk>
     <Def>5</Def>
     <Hp>100</Hp>
-    <Gold>0</Gold>
+    <Gold>47660</Gold>
     <Exp>0</Exp>
     <MyItems>
-      <MyItem>
-        <ItemId>5</ItemId>
-        <Equipment>True</Equipment>
-        <ItemName>무쇠갑옷</ItemName>
-        <ItemType>1</ItemType>
-        <ItemAbilitys>
-          <ItemAbility>
-            <Ability>1</Ability>
-            <Stat>9</Stat>
-          </ItemAbility>
-        </ItemAbilitys>
-        <Described>무쇠로 만들어져 튼튼한 갑옷입니다.</Described>
-      </MyItem>
       <MyItem>
         <ItemId>7</ItemId>
         <Equipment>True</Equipment>
@@ -151,8 +138,21 @@
         <Described>쉽게 볼 수 있는 낡은 검 입니다.</Described>
       </MyItem>
       <MyItem>
+        <ItemId>5</ItemId>
+        <Equipment>False</Equipment>
+        <ItemName>무쇠갑옷</ItemName>
+        <ItemType>1</ItemType>
+        <ItemAbilitys>
+          <ItemAbility>
+            <Ability>1</Ability>
+            <Stat>9</Stat>
+          </ItemAbility>
+        </ItemAbilitys>
+        <Described>무쇠로 만들어져 튼튼한 갑옷입니다.</Described>
+      </MyItem>
+      <MyItem>
         <ItemId>2</ItemId>
-        <Equipment>True</Equipment>
+        <Equipment>False</Equipment>
         <ItemName>청동 도끼</ItemName>
         <ItemType>0</ItemType>
         <ItemAbilitys>
@@ -162,6 +162,45 @@
           </ItemAbility>
         </ItemAbilitys>
         <Described>어디선가 사용됐던거 같은 도끼입니다.</Described>
+      </MyItem>
+      <MyItem>
+        <ItemId>3</ItemId>
+        <Equipment>True</Equipment>
+        <ItemName>스파르타의 창</ItemName>
+        <ItemType>0</ItemType>
+        <ItemAbilitys>
+          <ItemAbility>
+            <Ability>0</Ability>
+            <Stat>7</Stat>
+          </ItemAbility>
+        </ItemAbilitys>
+        <Described>스파르타의 전사들이 사용했다는 전설의 창입니다.</Described>
+      </MyItem>
+      <MyItem>
+        <ItemId>4</ItemId>
+        <Equipment>False</Equipment>
+        <ItemName>수련자 갑옷</ItemName>
+        <ItemType>1</ItemType>
+        <ItemAbilitys>
+          <ItemAbility>
+            <Ability>1</Ability>
+            <Stat>5</Stat>
+          </ItemAbility>
+        </ItemAbilitys>
+        <Described>수련에 도움을 주는 갑옷입니다.</Described>
+      </MyItem>
+      <MyItem>
+        <ItemId>6</ItemId>
+        <Equipment>True</Equipment>
+        <ItemName>스파르타의 갑옷</ItemName>
+        <ItemType>1</ItemType>
+        <ItemAbilitys>
+          <ItemAbility>
+            <Ability>1</Ability>
+            <Stat>15</Stat>
+          </ItemAbility>
+        </ItemAbilitys>
+        <Described>스파르타의 전사들이 사용했다는 전설의 갑옷입니다.</Described>
       </MyItem>
     </MyItems>
   </PlayerData>
