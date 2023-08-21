@@ -1,98 +1,168 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ItemData>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Data>
+  <Items>
     <Item>
-        <ItemId>1</ItemId>
-        <ItemName>낡은 검</ItemName>
-        <ItemTypes>0</ItemTypes>
-        <ItemAbilitys>
-            <ItemAbility>
-                <Ability>0</Ability>
-                <Stat>2</Stat>
-            </ItemAbility>
-        </ItemAbilitys>
-        <Described>쉽게 볼 수 있는 낡은 검 입니다.</Described>
-        <Price>600</Price>
+      <ItemId>1</ItemId>
+      <ItemName>낡은 검</ItemName>
+      <ItemType>0</ItemType>
+      <ItemAbilitys>
+        <ItemAbility>
+          <Ability>0</Ability>
+          <Stat>2</Stat>
+        </ItemAbility>
+      </ItemAbilitys>
+      <Described>쉽게 볼 수 있는 낡은 검 입니다.</Described>
+      <Price>600</Price>
     </Item>
     <Item>
-        <ItemId>2</ItemId>
-        <ItemName>청동 도끼</ItemName>
-        <ItemTypes>0</ItemTypes>
-        <ItemAbilitys>
-            <ItemAbility>
-                <Ability>0</Ability>
-                <Stat>5</Stat>
-            </ItemAbility>
-        </ItemAbilitys>
-        <Described>어디선가 사용됐던거 같은 도끼입니다.</Described>
-        <Price>1500</Price>
+      <ItemId>2</ItemId>
+      <ItemName>청동 도끼</ItemName>
+      <ItemType>0</ItemType>
+      <ItemAbilitys>
+        <ItemAbility>
+          <Ability>0</Ability>
+          <Stat>5</Stat>
+        </ItemAbility>
+      </ItemAbilitys>
+      <Described>어디선가 사용됐던거 같은 도끼입니다.</Described>
+      <Price>1500</Price>
     </Item>
     <Item>
-        <ItemId>3</ItemId>
-        <ItemName>스파르타의 창</ItemName>
-        <ItemTypes>0</ItemTypes>
-        <ItemAbilitys>
-            <ItemAbility>
-                <Ability>0</Ability>
-                <Stat>7</Stat>
-            </ItemAbility>
-        </ItemAbilitys>
-        <Described>스파르타의 전사들이 사용했다는 전설의 창입니다.</Described>
-        <Price>2200</Price>
+      <ItemId>3</ItemId>
+      <ItemName>스파르타의 창</ItemName>
+      <ItemType>0</ItemType>
+      <ItemAbilitys>
+        <ItemAbility>
+          <Ability>0</Ability>
+          <Stat>7</Stat>
+        </ItemAbility>
+      </ItemAbilitys>
+      <Described>스파르타의 전사들이 사용했다는 전설의 창입니다.</Described>
+      <Price>2200</Price>
     </Item>
     <Item>
-        <ItemId>4</ItemId>
-        <ItemName>수련자 갑옷</ItemName>
-        <ItemTypes>1</ItemTypes>
-        <ItemAbilitys>
-            <ItemAbility>
-                <Ability>1</Ability>
-                <Stat>5</Stat>
-            </ItemAbility>
-        </ItemAbilitys>
-        <Described>수련에 도움을 주는 갑옷입니다.</Described>
-        <Price>1000</Price>
+      <ItemId>4</ItemId>
+      <ItemName>수련자 갑옷</ItemName>
+      <ItemType>1</ItemType>
+      <ItemAbilitys>
+        <ItemAbility>
+          <Ability>1</Ability>
+          <Stat>5</Stat>
+        </ItemAbility>
+      </ItemAbilitys>
+      <Described>수련에 도움을 주는 갑옷입니다.</Described>
+      <Price>1000</Price>
     </Item>
     <Item>
+      <ItemId>5</ItemId>
+      <ItemName>무쇠갑옷</ItemName>
+      <ItemType>1</ItemType>
+      <ItemAbilitys>
+        <ItemAbility>
+          <Ability>1</Ability>
+          <Stat>9</Stat>
+        </ItemAbility>
+      </ItemAbilitys>
+      <Described>무쇠로 만들어져 튼튼한 갑옷입니다.</Described>
+      <Price>1800</Price>
+    </Item>
+    <Item>
+      <ItemId>6</ItemId>
+      <ItemName>스파르타의 갑옷</ItemName>
+      <ItemType>1</ItemType>
+      <ItemAbilitys>
+        <ItemAbility>
+          <Ability>1</Ability>
+          <Stat>15</Stat>
+        </ItemAbility>
+      </ItemAbilitys>
+      <Described>스파르타의 전사들이 사용했다는 전설의 갑옷입니다.</Described>
+      <Price>3500</Price>
+    </Item>
+    <Item>
+      <ItemId>7</ItemId>
+      <ItemName>가시방패</ItemName>
+      <ItemType>2</ItemType>
+      <ItemAbilitys>
+        <ItemAbility>
+          <Ability>1</Ability>
+          <Stat>7</Stat>
+        </ItemAbility>
+        <ItemAbility>
+          <Ability>0</Ability>
+          <Stat>1</Stat>
+        </ItemAbility>
+      </ItemAbilitys>
+      <Described>방어력과 공격력을 동시에!</Described>
+      <Price>2000</Price>
+    </Item>
+  </Items>
+  <PlayerData>
+    <Name>Chad</Name>
+    <Job>전사</Job>
+    <Level>1</Level>
+    <Atk>10</Atk>
+    <Def>5</Def>
+    <Hp>100</Hp>
+    <Gold>0</Gold>
+    <Exp>0</Exp>
+    <MyItems>
+      <MyItem>
         <ItemId>5</ItemId>
+        <Equipment>True</Equipment>
         <ItemName>무쇠갑옷</ItemName>
-        <ItemTypes>1</ItemTypes>
+        <ItemType>1</ItemType>
         <ItemAbilitys>
-            <ItemAbility>
-                <Ability>1</Ability>
-                <Stat>9</Stat>
-            </ItemAbility>
+          <ItemAbility>
+            <Ability>1</Ability>
+            <Stat>9</Stat>
+          </ItemAbility>
         </ItemAbilitys>
         <Described>무쇠로 만들어져 튼튼한 갑옷입니다.</Described>
-        <Price>1800</Price>
-    </Item>
-    <Item>
-        <ItemId>6</ItemId>
-        <ItemName>스파르타의 갑옷</ItemName>
-        <ItemTypes>1</ItemTypes>
-        <ItemAbilitys>
-            <ItemAbility>
-                <Ability>1</Ability>
-                <Stat>15</Stat>
-            </ItemAbility>
-        </ItemAbilitys>
-        <Described>스파르타의 전사들이 사용했다는 전설의 갑옷입니다.</Described>
-        <Price>3500</Price>
-    </Item>
-    <Item>
+      </MyItem>
+      <MyItem>
         <ItemId>7</ItemId>
+        <Equipment>True</Equipment>
         <ItemName>가시방패</ItemName>
-        <ItemTypes>2</ItemTypes>
+        <ItemType>2</ItemType>
         <ItemAbilitys>
-            <ItemAbility>
-                <Ability>1</Ability>
-                <Stat>7</Stat>
-            </ItemAbility>
-            <ItemAbility>
-                <Ability>0</Ability>
-                <Stat>1</Stat>
-            </ItemAbility>
+          <ItemAbility>
+            <Ability>1</Ability>
+            <Stat>7</Stat>
+          </ItemAbility>
+          <ItemAbility>
+            <Ability>0</Ability>
+            <Stat>1</Stat>
+          </ItemAbility>
         </ItemAbilitys>
         <Described>방어력과 공격력을 동시에!</Described>
-        <Price>2000</Price>
-    </Item>
-</ItemData>
+      </MyItem>
+      <MyItem>
+        <ItemId>1</ItemId>
+        <Equipment>False</Equipment>
+        <ItemName>낡은 검</ItemName>
+        <ItemType>0</ItemType>
+        <ItemAbilitys>
+          <ItemAbility>
+            <Ability>0</Ability>
+            <Stat>2</Stat>
+          </ItemAbility>
+        </ItemAbilitys>
+        <Described>쉽게 볼 수 있는 낡은 검 입니다.</Described>
+      </MyItem>
+      <MyItem>
+        <ItemId>2</ItemId>
+        <Equipment>True</Equipment>
+        <ItemName>청동 도끼</ItemName>
+        <ItemType>0</ItemType>
+        <ItemAbilitys>
+          <ItemAbility>
+            <Ability>0</Ability>
+            <Stat>5</Stat>
+          </ItemAbility>
+        </ItemAbilitys>
+        <Described>어디선가 사용됐던거 같은 도끼입니다.</Described>
+      </MyItem>
+    </MyItems>
+  </PlayerData>
+</Data>

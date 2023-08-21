@@ -6,18 +6,20 @@ namespace spartanDungeon
 {
     class Program
     {
-        public static string str = "";
+        public static string savePath = "";
 
+        //게임 규칙 선언
         public enum ItemTypes { 무기, 방어구, 방패 };
+        private static int[] myEquipment = new int[3];
         public enum Abilitys { 공격력, 방어력 };
-        private static Character player;
+        private static int[] myAddStat = new int[2];
 
+        //게임 데이터 관련 변수 선언
+        private static Character player;
         private static List<Item> myItem = new();
         private static List<Item> shop = new();
 
-        private static int[] myAddStat = new int[2];
-        private static int[] myEquipment = new int[3];
-
+        //아이템 정렬관련 변수 선언
         public static int sort = 0;
         public static bool order = true;
 
@@ -31,42 +33,22 @@ namespace spartanDungeon
         /// <summary>초기 세팅</summary>
         static void GameDataSetting()
         {
-            // 캐릭터 정보 세팅
-            player = new Character("Chad", "전사", 1, 10, 5, 100, 1500);
-
-            // 아이템 정보 세팅
-            List<ItemAbility> itemAbilities1 = new List<ItemAbility>();
-            List<ItemAbility> itemAbilities2 = new List<ItemAbility>();
-            List<ItemAbility> itemAbilities3 = new List<ItemAbility>();
-
-            itemAbilities1.Add(new ItemAbility(1, 5));
-            itemAbilities2.Add(new ItemAbility(0, 2));
-
-            itemAbilities3.Add(new ItemAbility(1, 7));
-            itemAbilities3.Add(new ItemAbility(0, 1));
-
-            myItem.Add(new Item(5, true, "무쇠갑옷", 1, itemAbilities1, "무쇠로 만들어져 튼튼한 갑옷입니다."));
-            myItem.Add(new Item(1, false, "낡은 검", 0, itemAbilities2, "쉽게 볼 수 있는 낡은 검 입니다."));
-            myItem.Add(new Item(7, true, "가시방패", 2, itemAbilities3, "방어력과 공격력을 동시에!"));
-
-            myEquipment[1] = 5;
-            myEquipment[2] = 7;
-
-
             // data.xml 파일 읽기
             // 프로젝트 경로와, 솔루션 명을 활용하여 파일경로를 설정하고 해당 파일을 읽기
             string projectPath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
             string solutionName = Assembly.GetEntryAssembly().GetName().Name;
 
             // 게임 저장을 위한 경로 저장
-            str = projectPath.Substring(0,projectPath.IndexOf(solutionName)+ solutionName.Length);
+            savePath = projectPath.Substring(0,projectPath.IndexOf(solutionName)+ solutionName.Length);
 
             // xml 파일 읽기
             XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load($"{str}/data.xml");
+            xmlDoc.Load($"{savePath}/data.xml");
+            //xmlDoc.Load($"{savePath}/resetData.xml");
 
             // xml 파싱
-            XmlNodeList itemNode = xmlDoc.GetElementsByTagName("Item");
+            // 아이템 정보 파싱
+            XmlNodeList itemNode = xmlDoc.SelectNodes("Data/Items/Item");
             foreach (XmlNode item in itemNode)
             {
                 XmlNodeList itemAbilitieNode = item.SelectNodes("ItemAbilitys/ItemAbility");
@@ -76,41 +58,72 @@ namespace spartanDungeon
                     itemAbility.Add(new ItemAbility(int.Parse(ability["Ability"].InnerText), int.Parse(ability["Stat"].InnerText)));
                 }
 
-                shop.Add(new Item(int.Parse(item["ItemId"].InnerText), item["ItemName"].InnerText, int.Parse(item["ItemTypes"].InnerText), itemAbility, item["Described"].InnerText, int.Parse(item["Price"].InnerText)));
+                shop.Add(new Item(int.Parse(item["ItemId"].InnerText), item["ItemName"].InnerText, int.Parse(item["ItemType"].InnerText), itemAbility, item["Described"].InnerText, int.Parse(item["Price"].InnerText)));
             }
 
-            Console.WriteLine();
+            // 캐릭터 정보 파싱
+            XmlNode playerNode = xmlDoc.SelectSingleNode("Data/PlayerData");
+            
+            // 캐릭터 정보 세팅
+            player = new Character(playerNode["Name"].InnerText, playerNode["Job"].InnerText, int.Parse(playerNode["Level"].InnerText), int.Parse(playerNode["Atk"].InnerText), int.Parse(playerNode["Def"].InnerText), int.Parse(playerNode["Hp"].InnerText), int.Parse(playerNode["Gold"].InnerText), int.Parse(playerNode["Exp"].InnerText));
+
+            // 아이템 정보 세팅
+            XmlNodeList myItemNode = playerNode.SelectNodes("MyItems/MyItem");
+            foreach (XmlNode item in myItemNode)
+            {
+                // 장착 여부 검증
+                bool equipment = bool.Parse(item["Equipment"].InnerText);
+                // 장착
+                if (equipment) myEquipment[int.Parse(item["ItemType"].InnerText)] = int.Parse(item["ItemId"].InnerText);
+             
+                XmlNodeList itemAbilitieNode = item.SelectNodes("ItemAbilitys/ItemAbility");
+                List<ItemAbility> itemAbility = new List<ItemAbility>();
+                foreach (XmlNode ability in itemAbilitieNode)
+                {
+                    itemAbility.Add(new ItemAbility(int.Parse(ability["Ability"].InnerText), int.Parse(ability["Stat"].InnerText)));
+                }
+
+                myItem.Add(new Item(int.Parse(item["ItemId"].InnerText), equipment, item["ItemName"].InnerText, int.Parse(item["ItemType"].InnerText), itemAbility, item["Described"].InnerText));
+            
+            }
+
+            //장비 추가 스텟 적용
+            AddStat();
         }
 
         /// <summary>게임 초기 화면 출력</summary>
         static void DisplayGameIntro()
         {
             Console.Clear();
-
             Console.WriteLine("스파르타 마을에 오신 여러분 환영합니다.");
             Console.WriteLine("이곳에서 전전으로 들어가기 전 활동을 할 수 있습니다.");
             Console.WriteLine();
             Console.WriteLine("1. 상태보기");
             Console.WriteLine("2. 인벤토리");
             Console.WriteLine("3. 상점");
+            Console.WriteLine("4. 던전입장");
+            Console.WriteLine("5. 휴식하기");
             Console.WriteLine();
             Console.WriteLine("원하시는 행동을 입력해주세요.");
 
-            int input = CheckValidInput(1, 3);
+            int input = CheckValidInput(1, 5);
             switch (input)
             {
                 case 1:
                     DisplayMyInfo();
                     break;
-
                 case 2:
                     DisplayInventory();
                     break;
-
                 case 3:
                     DisplayShop();
                     break;
-
+                case 4:
+                    DisplayDungeon();
+                    break;
+                case 5:
+                    DisplayRest("");
+                    break;
             }
         }
 
@@ -529,7 +542,7 @@ namespace spartanDungeon
                     break;
 
             }
-
+            AddStat();
             DisplayEquipment(msg);
         }
 
@@ -807,8 +820,160 @@ namespace spartanDungeon
                 
             player.Gold += (int)(shop[shop.FindIndex(i => i.ItemId == myItem[index].ItemId)].Price * 0.85f);
             myItem.RemoveAt(index);
-
+            AddStat();
             DisplaySale();
+        }
+
+        /// <summary>던전 정보 화면 출력</summary>
+        static void DisplayDungeon()
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("던전입장");
+            Console.ResetColor();
+
+            Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.");
+            Console.WriteLine();
+            Console.WriteLine("1. 쉬운 던전   | 방어력 5이상 권장");
+            Console.WriteLine("2. 일반 던전   | 방어력 11이상 권장");
+            Console.WriteLine("3. 어려운 던전 | 방어력 17이상 권장");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("0. 나가기");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine("원하시는 행동을 입력해주세요.");
+            int input = CheckValidInput(0, 3);
+            switch (input)
+            {
+                case 0:
+                    DisplayGameIntro();
+                    break;
+                default:
+                    Sale(input);
+                    break;
+            }
+        }
+
+
+        /// <summary>휴식 화면 출력</summary>
+        static void DisplayRest(string msg)
+        {
+            Console.Clear();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("휴식하기");
+            Console.ResetColor();
+
+            Console.Write("500 G 를 내면 체력을 회복할 수 있습니다. (보유 골드 : ");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write($"{player.Gold}");
+            Console.ResetColor();
+            Console.Write(" G)");
+
+            Console.WriteLine();
+            Console.WriteLine("1. 휴식하기");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("0. 나가기");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine("원하시는 행동을 입력해주세요.");
+            Console.WriteLine(msg);
+            int input = CheckValidInput(0, 1);
+            switch (input)
+            {
+                case 0:
+                    DisplayGameIntro();
+                    break;
+                case 1:
+                    Rest();
+                    break;
+            }
+        }
+
+        /// <summary>휴식 메소드</summary>
+        static void Rest()
+        {
+            string msg = "";
+
+            if (player.Gold < 500)
+            {
+                msg = "Gold 가 부족합니다.";
+            }
+            else
+            {
+                msg = "체력이 회복되었습니다.";
+                player.Gold -= 500;
+                player.Hp = 100;
+            }
+            DisplayRest(msg);
+        }
+
+        /// <summary>정보 저장 메소드</summary>
+        static void Save()
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load($"{savePath}/data.xml");
+
+
+            XmlNode playerNode = xmlDoc.SelectSingleNode("Data/PlayerData");
+
+            // 캐릭터 정보 저장
+            playerNode["Name"].InnerText = player.Name;
+            playerNode["Job"].InnerText = player.Job;
+            playerNode["Level"].InnerText = player.Level.ToString();
+            playerNode["Atk"].InnerText = player.Atk.ToString();
+            playerNode["Def"].InnerText = player.Def.ToString();
+            playerNode["Hp"].InnerText = player.Hp.ToString();
+            playerNode["Gold"].InnerText = player.Gold.ToString();
+            playerNode["Exp"].InnerText = player.Exp.ToString();
+
+            // 기존 아이템 정보 삭제
+            playerNode.RemoveChild(playerNode["MyItems"]);
+
+            // 아이템 정보 저장
+            XmlNode myItems = xmlDoc.CreateElement("MyItems");
+            playerNode.AppendChild(myItems);
+            foreach (Item item in myItem)
+            {
+                XmlNode myItem = xmlDoc.CreateElement("MyItem");
+
+                XmlNode itemId = xmlDoc.CreateElement("ItemId");
+                XmlNode equipment = xmlDoc.CreateElement("Equipment");
+                XmlNode itemName = xmlDoc.CreateElement("ItemName");
+                XmlNode itemType = xmlDoc.CreateElement("ItemType");
+                XmlNode described = xmlDoc.CreateElement("Described");
+
+                itemId.InnerText = item.ItemId.ToString();
+                equipment.InnerText = item.Equipment.ToString();
+                itemName.InnerText = item.ItemName;
+                itemType.InnerText = ((int)item.Type).ToString();
+                described.InnerText = item.Described;
+
+                XmlNode itemAbilitys = xmlDoc.CreateElement("ItemAbilitys");
+                foreach (ItemAbility itemAbilityItem in item.ItemAbilitys)
+                {
+                    XmlNode itemAbility = xmlDoc.CreateElement("ItemAbility");
+                    XmlNode ability = xmlDoc.CreateElement("Ability");
+                    XmlNode stat = xmlDoc.CreateElement("Stat");
+
+                    ability.InnerText = ((int)itemAbilityItem.Ability).ToString();
+                    stat.InnerText = itemAbilityItem.Stat.ToString();
+
+                    itemAbility.AppendChild(ability);
+                    itemAbility.AppendChild(stat);
+                    itemAbilitys.AppendChild(itemAbility);
+                }
+
+                myItem.AppendChild(itemId);
+                myItem.AppendChild(equipment);
+                myItem.AppendChild(itemName);
+                myItem.AppendChild(itemType);
+                myItem.AppendChild(itemAbilitys);
+                myItem.AppendChild(described);
+
+                myItems.AppendChild(myItem);
+            }
+
+            xmlDoc.Save($"{savePath}/data.xml");
         }
 
         /// <summary>입력 검증 메소드</summary>
@@ -822,7 +987,11 @@ namespace spartanDungeon
                 if (parseSuccess)
                 {
                     if (ret >= min && ret <= max)
+                    {
+                        if (ret == 0) Save();
                         return ret;
+                    }
+
                 }
 
                 Console.WriteLine("잘못된 입력입니다.");
@@ -833,14 +1002,15 @@ namespace spartanDungeon
         {
             public string Name { get; }
             public string Job { get; }
-            public int Level { get; }
-            public int Atk { get; }
-            public int Def { get; }
-            public int Hp { get; }
+            public int Level { get; set; }
+            public int Atk { get; set; }
+            public int Def { get; set; }
+            public int Hp { get; set; }
             public int Gold { get; set; }
+            public int Exp { get; set; }
             public int[] AddStat { get; set; }
 
-            public Character(string name, string job, int level, int atk, int def, int hp, int gold)
+            public Character(string name, string job, int level, int atk, int def, int hp, int gold, int exp)
             {
                 Name = name;
                 Job = job;
@@ -849,6 +1019,7 @@ namespace spartanDungeon
                 Def = def;
                 Hp = hp;
                 Gold = gold;
+                Exp = exp;
             }
         }
 
