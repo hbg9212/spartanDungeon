@@ -1,6 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
+using static spartanDungeon.Program;
 
 namespace spartanDungeon
 {
@@ -19,7 +22,7 @@ namespace spartanDungeon
         public static Character player;
         public static List<Item> myItem = new();
         public static List<Item> shop = new();
-        public static int[] maxExp = { 1, 2, 3, 4 };
+        public static int[] maxExp = { 0, 1, 2, 3, 4 };
 
         //아이템 정렬관련 변수 선언
         public static int sort = 0;
@@ -28,12 +31,12 @@ namespace spartanDungeon
         /// <summary>게임 시작</summary>
         static void Main(string[] args)
         {
-            GameDataSetting();
+            GameDataSetting(0);
             DisplayGameIntro();
         }
 
         /// <summary>초기 세팅</summary>
-        static void GameDataSetting()
+        static void GameDataSetting(int set)
         {
             // data.xml 파일 읽기
             // 프로젝트 경로와, 솔루션 명을 활용하여 파일경로를 설정하고 해당 파일을 읽기
@@ -44,10 +47,17 @@ namespace spartanDungeon
             savePath = projectPath.Substring(0,projectPath.IndexOf(solutionName)+ solutionName.Length);
 
             // xml 파일 읽기
+            // 게임 시작 0, 사망시 초기화 1
             XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load($"{savePath}/data.xml");
-            //xmlDoc.Load($"{savePath}/resetData.xml");
-
+            if(set == 0)
+            {
+                xmlDoc.Load($"{savePath}/data.xml");
+            }
+            else
+            {
+                xmlDoc.Load($"{savePath}/resetData.xml");
+            }
+           
             // xml 파싱
             // 아이템 정보 파싱
             XmlNodeList itemNode = xmlDoc.SelectNodes("Data/Items/Item");
@@ -70,6 +80,7 @@ namespace spartanDungeon
             player = new Character(playerNode["Name"].InnerText, playerNode["Job"].InnerText, int.Parse(playerNode["Level"].InnerText), int.Parse(playerNode["Atk"].InnerText), int.Parse(playerNode["Def"].InnerText), int.Parse(playerNode["Hp"].InnerText), int.Parse(playerNode["Gold"].InnerText), int.Parse(playerNode["Exp"].InnerText));
 
             // 아이템 정보 세팅
+            myItem = new();
             XmlNodeList myItemNode = playerNode.SelectNodes("MyItems/MyItem");
             foreach (XmlNode item in myItemNode)
             {
@@ -902,8 +913,11 @@ namespace spartanDungeon
                 clear = target > 0 ? true : false; 
             }
 
-            // 클리어 체력 감소 20~35 사이 + 내방어력 - 권장방어력
-            int subHp = rand.Next(20, 36) + player.Def + myAddStat[(int)Abilitys.방어력] - minDef;
+            // 클리어 체력 감소 20~35 사이 - 내방어력 + 권장방어력
+            int subHp = rand.Next(20, 36) - (player.Def + myAddStat[(int)Abilitys.방어력]) + minDef;
+            // 내방어력이 너무 높으면 체력 회복 되는걸 방지
+            subHp = subHp < 0 ? 0 : subHp;
+
             // 클리어 보상 처리
             if (clear)
             {
@@ -941,6 +955,8 @@ namespace spartanDungeon
             {
                 Console.WriteLine();
                 Console.WriteLine("캐릭터가 사망하였습니다.");
+                Console.WriteLine("모든 정보가 초기화 됩니다.");
+                GameDataSetting(1);
             }
             else if (!die && !clear)
             {
@@ -960,9 +976,33 @@ namespace spartanDungeon
 
                 Console.WriteLine("[탐험 결과]");
                 Console.WriteLine($"체력 {player.Hp + subHp} -> {player.Hp}");
-                Console.WriteLine($"Gold  {player.Gold } -> {player.Gold + basicGold}");
+                Console.WriteLine($"Gold {player.Gold } G -> {player.Gold + basicGold} G");
                 player.Gold += basicGold;
+                
+                //경험치 증가
                 player.Exp++;
+                if (player.Level < 5)
+                {
+                    // 경험치 조건 충족시 레업
+                    if(player.Exp >= maxExp[player.Level])
+                    {
+
+                        player.Level++;
+                        player.Exp = 0;
+
+                        float addAtl = 0.5f * (player.Level - 1);
+                        int addDef = (int)1 * (player.Level - 1);
+
+                        Console.WriteLine();
+                        Console.WriteLine("[레벨 업]");
+                        Console.WriteLine($"Level {player.Level - 1} -> {player.Level}");
+                        Console.WriteLine($"공격력 {player.Atk} -> {10 + (int)addAtl}");
+                        Console.WriteLine($"방어력 {player.Def} -> {5+addDef}");
+
+                        player.Atk = 10 + (int)addAtl;
+                        player.Def = 5 + addDef;
+                }
+                }
             }
 
             Console.WriteLine();
